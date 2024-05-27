@@ -1,13 +1,19 @@
-const express = require('express');
+const express = require("express");
+const connectDB = require("./config/config");
+const swaggerUi = require("swagger-ui-express");
+const swaggerDocument = require("./docs/index");
+const tasks = require("./routes/tasks");
+
 const app = express();
-const PORT = 8080;
-const { dbConnection } = require('./config/config');
-const routes = require('./routes');
+
+connectDB();
+
 app.use(express.json());
+app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+app.use("/tasks", tasks);
 
-app.use('/', routes);
+const PORT = process.env.PORT || 5000;
 
-
-dbConnection();
-
-app.listen(PORT, () => console.log(`Server started on port ${PORT}`));
+app.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
+});
